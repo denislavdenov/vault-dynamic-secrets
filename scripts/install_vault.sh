@@ -1,19 +1,9 @@
 #!/usr/bin/env bash
 
 which unzip curl socat jq route dig vim sshpass || {
-apt-get update -y
-apt-get install unzip socat jq dnsutils net-tools vim curl sshpass -y 
+    apt-get update -y
+    apt-get install unzip socat jq dnsutils net-tools vim curl sshpass -y 
 }
-
-# Install docker
-sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-sudo apt-get update -y
-apt-cache policy docker-ce
-sudo apt install docker-ce -y
-sudo systemctl enable docker
-sudo systemctl start docker
 
 # Stop vault if running previously
 sudo systemctl stop vault
@@ -147,8 +137,23 @@ vault login $(cat /vagrant/keys.txt | grep "Initial Root Token:" | cut -c21-)
 
 sudo usermod -aG docker vagrant
 
-
 vault secrets enable database
+
+# we will run postgresql in a docker container
+# we install docker if not available
+
+which docker || {
+    # Install docker
+    apt install apt-transport-https ca-certificates curl software-properties-common -y
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    apt-get update -y
+    apt-cache policy docker-ce
+    apt install docker-ce -y
+    systemctl enable docker
+    systemctl start docker
+}
 
 docker run --name postgres -e POSTGRES_USER=root \
          -e POSTGRES_PASSWORD=rootpassword \
@@ -167,7 +172,3 @@ vault write database/roles/readonly db_name=postgresql \
 
 vault policy write apps /vagrant/apps-policy.hcl
 vault token create -policy="apps" > /vagrant/apps_token.txt
-
-
-#VAULT_TOKEN=s.z99C7Xf3X0NNEn18aF6ppt7G vault read database/creds/readonly
-#docker exec -it postgres psql -U root
