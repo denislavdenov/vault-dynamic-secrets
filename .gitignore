@@ -1,0 +1,5 @@
+.vagrant/
+logs/
+pkg/
+keys.txt
+apps_token.txt
