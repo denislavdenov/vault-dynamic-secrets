@@ -29,7 +29,8 @@ Vagrant.configure("2") do |config|
         node.vm.network "private_network", ip: "10.#{dc}0.56.1#{i}"
         node.vm.network "forwarded_port", guest: 8500, host: 8500 + i
       end
-    end
+     
+    end # end server_count
 
 
     config.vm.define "client-vault-server1-#{dcname}" do |vault|
@@ -39,6 +40,8 @@ Vagrant.configure("2") do |config|
         vault.vm.provision :shell, path: "scripts/start_consul.sh", env: {"SERVER_COUNT" => SERVER_COUNT,"LOG_LEVEL" => LOG_LEVEL,"DOMAIN" => DOMAIN,"DCS" => "#{dcname}","DC" => "#{dc}","TLS" => TLS}
         vault.vm.provision :shell, path: "scripts/install_vault.sh", env: {"VAULT" => VAULT,"DOMAIN" => DOMAIN}
         vault.vm.network "private_network", ip: "10.#{dc}0.46.11"
-      end
-  end
+    end
+   
+  end # end dcname, dc
+ 
 end
