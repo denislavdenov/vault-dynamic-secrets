@@ -38,6 +38,7 @@ Vagrant.configure("2") do |config|
         vault.vm.hostname = "client-vault-server1-#{dcname}"
         vault.vm.provision :shell, path: "scripts/install_consul.sh", env: {"CONSUL_VER" => CONSUL_VER}
         vault.vm.provision :shell, path: "scripts/start_consul.sh", env: {"SERVER_COUNT" => SERVER_COUNT,"LOG_LEVEL" => LOG_LEVEL,"DOMAIN" => DOMAIN,"DCS" => "#{dcname}","DC" => "#{dc}","TLS" => TLS}
+        vault.vm.provision :shell, path: "scripts/install_docker.sh"
         vault.vm.provision :shell, path: "scripts/install_vault.sh", env: {"VAULT" => VAULT,"DOMAIN" => DOMAIN}
         vault.vm.network "private_network", ip: "10.#{dc}0.46.11"
     end

@@ -1,19 +1,9 @@
 #!/usr/bin/env bash
 
 which unzip curl socat jq route dig vim sshpass || {
-apt-get update -y
-apt-get install unzip socat jq dnsutils net-tools vim curl sshpass -y 
+  apt-get update -y
+  apt-get install unzip socat jq dnsutils net-tools vim curl sshpass -y 
 }
-
-# Install docker
-sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-sudo apt-get update -y
-apt-cache policy docker-ce
-sudo apt install docker-ce -y
-sudo systemctl enable docker
-sudo systemctl start docker
 
 # Stop vault if running previously
 sudo systemctl stop vault
@@ -153,6 +143,8 @@ vault secrets enable database
 docker run --name postgres -e POSTGRES_USER=root \
          -e POSTGRES_PASSWORD=rootpassword \
          -d -p 5432:5432 postgres
+
+sleep 10         
          
 
 vault write database/config/postgresql \
